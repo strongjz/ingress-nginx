@@ -61,6 +61,7 @@ endif
 REGISTRY ?= gcr.io/k8s-staging-ingress-nginx
 
 BASE_IMAGE ?= $(shell cat NGINX_BASE)
+E2E_BASE_IMAGE ?= $(shell cat TEST_BASE)
 
 GOARCH=$(ARCH)
 
@@ -127,13 +128,15 @@ clean: ## Remove .gocache directory.
 
 .PHONY: static-check
 static-check: ## Run verification script for boilerplate, codegen, gofmt, golint, lualint and chart-lint.
-	@build/run-in-docker.sh \
+	E2E_IMAGE="$(E2E_BASE_IMAGE)"	\
+	build/run-in-docker.sh \
 	    MAC_OS=$(MAC_OS) \
 		hack/verify-all.sh
 
 .PHONY: golint-check
 golint-check:
-	@build/run-in-docker.sh \
+	E2E_IMAGE="$(E2E_BASE_IMAGE)"	\
+	build/run-in-docker.sh \
 	    MAC_OS=$(MAC_OS) \
 		hack/verify-golint.sh
 
@@ -143,7 +146,8 @@ golint-check:
 
 .PHONY: test
 test:  ## Run go unit tests.
-	@build/run-in-docker.sh \
+	E2E_IMAGE="$(E2E_BASE_IMAGE)"	\
+	build/run-in-docker.sh \
 		PKG=$(PKG) \
 		MAC_OS=$(MAC_OS) \
 		ARCH=$(ARCH) \
@@ -165,7 +169,7 @@ e2e-test:  ## Run e2e tests (expects access to a working Kubernetes cluster).
 
 .PHONY: kind-e2e-test
 kind-e2e-test:  ## Run e2e tests using kind.
-	@test/e2e/run-kind-e2e.sh
+	@E2E_IMAGE="$(E2E_BASE_IMAGE)" test/e2e/run-kind-e2e.sh
 
 .PHONY: kind-e2e-chart-tests
 kind-e2e-chart-tests: ## Run helm chart e2e tests

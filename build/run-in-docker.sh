@@ -44,8 +44,6 @@ function cleanup {
 }
 trap cleanup EXIT
 
-E2E_IMAGE=${E2E_IMAGE:-registry.k8s.io/ingress-nginx/e2e-test-runner:v20240703-195ce186@sha256:98db2302f2a548d1b0748cb4d0a381995de761e4324fef3b8296004337a9b581}
-
 if [[ "$RUNTIME" == podman ]]; then
   # Podman does not support both tag and digest
   E2E_IMAGE=$(echo $E2E_IMAGE | awk -F "@sha" '{print $1}')
